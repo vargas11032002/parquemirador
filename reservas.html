@@ -676,9 +676,25 @@ function renderAvail() {
 // ═══════════════════════════════════════════
 function mountWompi() {
     const container = document.getElementById('wompi-container');
-    container.innerHTML = '';
+    container.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-terra text-2xl"></i><p class="text-xs text-olive/50 mt-2">Cargando pasarela de pago...</p></div>';
 
-    // Si Wompi no cargó (requiere https:// en producción) mostrar alternativa por WhatsApp
+    // Esperar hasta 5 segundos a que Wompi cargue
+    let intentos = 0;
+    const intentar = () => {
+        intentos++;
+        if (typeof WidgetCheckout !== 'undefined') {
+            _montarWompi();
+        } else if (intentos < 50) {
+            setTimeout(intentar, 100);
+        } else {
+            _mostrarFallbackWA();
+        }
+    };
+    setTimeout(intentar, 100);
+}
+
+function _mostrarFallbackWA() {
+    const container = document.getElementById('wompi-container');
     if (typeof WidgetCheckout === 'undefined') {
         const cab = CABANAS.find(c=>c.id===S.cabanaId);
         const nights = calcNights();
@@ -698,7 +714,7 @@ function mountWompi() {
             '',
             '⚠️ _Pago pendiente — cliente enviará comprobante_',
         ].filter(Boolean).join('\n');
-        const waUrl = `https://wa.me/${CFG.whatsappNum}?text=${encodeURIComponent(msg)}`;
+        const waUrl = `https://wa.me/573106876100?text=${encodeURIComponent(msg)}`;
         container.innerHTML = `
             <div class="space-y-3">
                 <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800 flex gap-3">
@@ -714,8 +730,12 @@ function mountWompi() {
             </div>`;
         return;
     }
+}
 
-    const ref = 'CONUCO-' + Date.now();
+function _montarWompi() {
+    const container = document.getElementById('wompi-container');
+    container.innerHTML = '';
+    const ref = `CONUCO-${Date.now()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
     const cab = CABANAS.find(c=>c.id===S.cabanaId);
     const nights = calcNights();
 
@@ -723,7 +743,7 @@ function mountWompi() {
         currency:        'COP',
         amountInCents:   S.totalCentavos,
         reference:       ref,
-        publicKey:       CFG.wompiKey,
+        publicKey:       'pub_test_OTjNdHZSwrQwP97JMnymcEsXn2yJaXvb',
         redirectUrl:     window.location.href + '?reserva=ok',
         customerData: {
             email:      S.email,
@@ -776,7 +796,7 @@ function mountWompi() {
                 `⏰ ${new Date().toLocaleString('es-CO')}`,
             ].filter(Boolean).join('\n');
 
-            window.open(`https://wa.me/${CFG.whatsappNum}?text=${encodeURIComponent(msg)}`, '_blank');
+            window.open(`https://wa.me/573106876100?text=${encodeURIComponent(msg)}`, '_blank');
             showSuccess(ref);
         } else if (transaction && transaction.status === 'DECLINED') {
             showToast('⚠️ El pago fue declinado. Intenta con otro método.', true);
