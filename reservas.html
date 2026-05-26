@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas | Parque Mirador Conuco · Garzón, Huila</title>
+    <meta name="description" content="Reserva y paga tu cabaña en el Parque Mirador Conuco. Consulta disponibilidad en tiempo real, paga con Wompi y recibe confirmación inmediata.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://parquemiradorconuco.com/reservas.html">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        olive:      '#3d4a2e',
+                        oliveDark:  '#2a3320',
+                        oliveLight: '#4f5e3a',
+                        terra:      '#c4703a',
+                        terraLight: '#d4845a',
+                        sand:       '#e8d9c0',
+                        cream:      '#faf6ef',
+                        fog:        '#f0ebe2',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Wompi Widget - requiere https:// en producción -->
+    <script src="https://checkout.wompi.co/mount.js" defer></script>
+
+    <style>
+        :root { --olive:#3d4a2e; --terra:#c4703a; --sand:#e8d9c0; --cream:#faf6ef; }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--olive); overflow-x: hidden; }
+        h1,h2,h3,h4 { font-family: 'Cormorant Garamond', serif; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--olive); }
+        ::-webkit-scrollbar-thumb { background: var(--terra); border-radius: 10px; }
+
+        /* NAV */
+        .glass-olive { background:rgba(42,51,32,.94); backdrop-filter:blur(14px); border-bottom:1px solid rgba(196,112,58,.15); }
+
+        /* STEPS */
+        .step-num {
+            width:34px; height:34px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:.75rem; font-weight:700; flex-shrink:0;
+            transition: all .3s ease;
+        }
+        .step-line { flex:1; height:2px; background:#e8d9c0; transition: background .4s ease; }
+        .step-line.done { background: var(--terra); }
+
+        /* CALENDAR */
+        .cal-day {
+            aspect-ratio:1; border-radius:10px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            font-size:.8rem; font-weight:500; cursor:pointer;
+            transition:all .18s ease; position:relative;
+            border:1.5px solid transparent; user-select:none; min-width:0;
+        }
+        .cal-day.available { background:#fff; border-color:#e8d9c0; color:var(--olive); }
+        .cal-day.available:hover { border-color:var(--terra); background:#fff8f3; transform:scale(1.05); }
+        .cal-day.selected { background:var(--terra); border-color:var(--terra); color:#fff; transform:scale(1.08); box-shadow:0 4px 14px rgba(196,112,58,.35); }
+        .cal-day.in-range { background:rgba(196,112,58,.1); border-color:rgba(196,112,58,.28); }
+        .cal-day.full { background:#f0ebe2; border-color:#ddd5c8; color:#bbb; cursor:not-allowed; }
+        .cal-day.past { background:transparent; border-color:transparent; color:#ccc; cursor:default; }
+        .cal-day.today-mark::after { content:''; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:currentColor; opacity:.5; }
+        .avail-dot { width:5px; height:5px; border-radius:50%; margin-top:2px; }
+
+        /* CABIN CARD */
+        .cabin-card { border:2px solid #e8d9c0; border-radius:16px; padding:14px; cursor:pointer; transition:all .2s ease; background:#fff; }
+        .cabin-card:hover { border-color:var(--terra); background:#fff8f3; }
+        .cabin-card.selected { border-color:var(--terra); background:#fff8f3; box-shadow:0 0 0 3px rgba(196,112,58,.15); }
+        .cabin-card.unavailable { opacity:.5; cursor:not-allowed; background:#f7f5f2; }
+
+        /* FORM */
+        .form-input {
+            width:100%; border:1.5px solid #e8d9c0; border-radius:12px;
+            padding:12px 16px; font-size:.9rem; background:#fff; color:var(--olive);
+            outline:none; transition:border-color .2s; font-family:'DM Sans',sans-serif;
+        }
+        .form-input:focus { border-color:var(--terra); box-shadow:0 0 0 3px rgba(196,112,58,.1); }
+        .form-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--olive); opacity:.55; margin-bottom:6px; display:block; }
+
+        /* PRICE BOX */
+        .price-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0ebe2; font-size:.85rem; }
+        .price-row:last-child { border:none; }
+        .price-total { display:flex; justify-content:space-between; align-items:center; padding:14px 0 0; font-size:1.05rem; font-weight:700; color:var(--olive); }
+
+        /* WOMPI BUTTON WRAPPER */
+        #wompi-container { display:flex; justify-content:center; }
+        #wompi-container .WidgetCheckout { width:100% !important; }
+        #wompi-container button {
+            width:100% !important; background:var(--terra) !important;
+            border-radius:50px !important; font-family:'DM Sans',sans-serif !important;
+            font-weight:600 !important; letter-spacing:.08em !important;
+            font-size:.85rem !important; padding:14px !important;
+            text-transform:uppercase !important;
+        }
+
+        /* TOAST */
+        #toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--olive); color:#fff; padding:13px 24px; border-radius:40px; font-size:.83rem; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,.2); opacity:0; pointer-events:none; transition:opacity .3s ease; white-space:nowrap; z-index:999; }
+        #toast.show { opacity:1; }
+
+        /* ANIM */
+        @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+        .fade-up { animation:fadeUp .35s ease forwards; }
+
+        /* PULSE */
+        @keyframes pT { 0%{box-shadow:0 0 0 0 rgba(196,112,58,.65)} 70%{box-shadow:0 0 0 12px rgba(196,112,58,0)} 100%{box-shadow:0 0 0 0 rgba(196,112,58,0)} }
+        .pulse-terra { animation:pT 2.4s infinite; }
+
+        /* MODAL */
+        .modal-bg { position:fixed; inset:0; z-index:60; background:rgba(42,51,32,.7); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:16px; }
+    </style>
+</head>
+<body>
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/573000000000" target="_blank" rel="noopener" aria-label="WhatsApp"
+   class="fixed bottom-6 right-6 z-50 bg-[#25d366] hover:bg-[#1dba58] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-xl transition-all hover:scale-110 pulse-terra">
+    <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- NAV -->
+<nav class="glass-olive fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full border-2 border-terra flex items-center justify-center text-terra font-bold font-serif text-lg">C</div>
+            <div>
+                <span class="text-sm font-bold tracking-[.18em] text-sand block" style="font-family:'Cormorant Garamond',serif;">CONUCO</span>
+                <span class="text-[9px] text-terra/70 tracking-[.2em] uppercase block -mt-0.5">Parque Mirador · Huila</span>
+            </div>
+        </a>
+        <div class="flex items-center gap-4">
+            <span class="hidden sm:inline text-sand/50 text-xs"><i class="fa-solid fa-lock text-terra mr-1"></i>Pago seguro con Wompi</span>
+            <a href="index.html" class="text-sand/70 hover:text-terra text-sm flex items-center gap-2 transition-colors font-medium">
+                <i class="fa-solid fa-arrow-left text-xs"></i> Volver
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="pt-20 pb-10 px-6 text-center" style="background:linear-gradient(135deg,#2a3320 0%,#3d4a2e 100%);">
+    <span class="inline-block text-[10px] tracking-[.22em] uppercase text-terra font-semibold mb-3">Reserva tu experiencia</span>
+    <h1 class="text-3xl md:text-5xl text-sand mb-2" style="font-weight:300;">Agenda y paga <em class="text-terra">en línea</em></h1>
+    <p class="text-sand/50 text-sm max-w-md mx-auto">Proceso seguro · Pago con Wompi · Confirmación automática por WhatsApp</p>
+</div>
+
+<!-- MAIN -->
+<main class="max-w-6xl mx-auto px-4 md:px-8 py-10">
+
+    <!-- BARRA DE PASOS -->
+    <div class="flex items-center gap-2 mb-10 max-w-xl mx-auto">
+        <div class="flex flex-col items-center gap-1 shrink-0">
+            <div class="step-num bg-terra text-white" id="s1">1</div>
+            <span class="text-[9px] text-terra font-bold tracking-wider uppercase">Fechas</span>
+        </div>
+        <div class="step-line" id="l12"></div>
+        <div class="flex flex-col items-center gap-1 shrink-0">
+            <div class="step-num bg-sand text-olive/40" id="s2">2</div>
+            <span class="text-[9px] text-olive/35 font-bold tracking-wider uppercase" id="lbl2">Cabaña</span>
+        </div>
+        <div class="step-line" id="l23"></div>
+        <div class="flex flex-col items-center gap-1 shrink-0">
+            <div class="step-num bg-sand text-olive/40" id="s3">3</div>
+            <span class="text-[9px] text-olive/35 font-bold tracking-wider uppercase" id="lbl3">Datos</span>
+        </div>
+        <div class="step-line" id="l34"></div>
+        <div class="flex flex-col items-center gap-1 shrink-0">
+            <div class="step-num bg-sand text-olive/40" id="s4">4</div>
+            <span class="text-[9px] text-olive/35 font-bold tracking-wider uppercase" id="lbl4">Pagar</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- COLUMNA PRINCIPAL -->
+        <div class="lg:col-span-2 space-y-5">
+
+            <!-- PASO 1: CALENDARIO -->
+            <div id="step-1" class="bg-white rounded-3xl p-6 md:p-8 border border-sand shadow-sm fade-up">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-2xl text-olive" style="font-weight:400;"><i class="fa-solid fa-calendar-days text-terra mr-2"></i>Selecciona las fechas</h2>
+                    <div class="flex gap-2 items-center">
+                        <button onclick="prevMonth()" class="w-8 h-8 rounded-full bg-fog hover:bg-sand text-olive flex items-center justify-center text-xs transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="cal-header" class="text-sm font-semibold w-32 text-center text-olive"></span>
+                        <button onclick="nextMonth()" class="w-8 h-8 rounded-full bg-fog hover:bg-sand text-olive flex items-center justify-center text-xs transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Dom</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Lun</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Mar</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Mié</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Jue</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Vie</div>
+                    <div class="text-center text-[9px] font-bold text-olive/35 uppercase py-1">Sáb</div>
+                </div>
+                <div id="cal-grid" class="grid grid-cols-7 gap-1"></div>
+                <div class="flex flex-wrap gap-5 mt-5 pt-4 border-t border-fog text-xs text-olive/55">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-white border border-sand inline-block"></span>Disponible</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-terra inline-block"></span>Seleccionado</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#e87a3a] inline-block w-2 h-2"></span>Pocas cabañas</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-fog border border-sand/50 inline-block"></span>Sin disponibilidad</span>
+                </div>
+            </div>
+
+            <!-- PASO 2: CABAÑA -->
+            <div id="step-2" class="bg-white rounded-3xl p-6 md:p-8 border border-sand shadow-sm fade-up" style="display:none;">
+                <h2 class="text-2xl text-olive mb-1" style="font-weight:400;"><i class="fa-solid fa-house-chimney text-terra mr-2"></i>Elige tu cabaña</h2>
+                <p id="sub2" class="text-xs text-olive/45 mb-5 tracking-wide"></p>
+                <div id="cabin-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+
+            <!-- PASO 3: DATOS -->
+            <div id="step-3" class="bg-white rounded-3xl p-6 md:p-8 border border-sand shadow-sm fade-up" style="display:none;">
+                <h2 class="text-2xl text-olive mb-6" style="font-weight:400;"><i class="fa-solid fa-user text-terra mr-2"></i>Tus datos</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">Nombre completo *</label>
+                        <input id="inp-nombre" type="text" placeholder="Ej: María García Pérez" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">WhatsApp / Teléfono *</label>
+                        <div class="flex gap-2">
+                            <span class="form-input w-20 text-center text-olive/60 shrink-0 flex items-center justify-center">🇨🇴 +57</span>
+                            <input id="inp-tel" type="tel" placeholder="3001234567" class="form-input">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Correo electrónico *</label>
+                        <input id="inp-email" type="email" placeholder="tucorreo@gmail.com" class="form-input">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Adultos</label>
+                            <select id="inp-adultos" class="form-input">
+                                <option value="1">1</option><option value="2" selected>2</option>
+                                <option value="3">3</option><option value="4">4</option><option value="5">5+</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Niños</label>
+                            <select id="inp-ninos" class="form-input">
+                                <option value="0" selected>0</option><option value="1">1</option>
+                                <option value="2">2</option><option value="3">3</option><option value="4">4+</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Notas (opcional)</label>
+                        <textarea id="inp-notas" rows="2" placeholder="Hora de llegada, necesidades especiales..." class="form-input resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 4: RESUMEN + PAGO -->
+            <div id="step-4" class="bg-white rounded-3xl p-6 md:p-8 border border-sand shadow-sm fade-up" style="display:none;">
+                <h2 class="text-2xl text-olive mb-5" style="font-weight:400;"><i class="fa-solid fa-receipt text-terra mr-2"></i>Resumen y pago</h2>
+
+                <!-- Resumen datos -->
+                <div id="resumen-datos" class="bg-fog rounded-2xl p-5 mb-5 text-sm space-y-2"></div>
+
+                <!-- Desglose de precios -->
+                <div class="bg-white border border-sand rounded-2xl p-5 mb-5">
+                    <p class="text-[10px] font-bold text-olive/40 uppercase tracking-widest mb-3">Desglose del pago</p>
+                    <div id="price-breakdown"></div>
+                    <div class="price-total border-t border-sand mt-2 pt-3">
+                        <span>Total a pagar</span>
+                        <span id="price-total-display" class="text-terra text-xl" style="font-family:'Cormorant Garamond',serif;"></span>
+                    </div>
+                </div>
+
+                <!-- Aviso -->
+                <div class="bg-terra/8 border border-terra/20 rounded-2xl p-4 mb-6 text-xs text-olive/70 leading-relaxed flex gap-3">
+                    <i class="fa-solid fa-shield-halved text-terra text-lg shrink-0 mt-0.5"></i>
+                    <span>Pago seguro procesado por <strong class="text-olive">Wompi</strong>. Acepta tarjetas débito/crédito, PSE, Nequi y Daviplata. Al completar el pago, el encargado del parque recibirá un mensaje automático con todos tus datos de reserva.</span>
+                </div>
+
+                <!-- BOTÓN WOMPI -->
+                <div id="wompi-container" class="mb-3"></div>
+                <p class="text-center text-[10px] text-olive/35 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock text-terra"></i>
+                    Conexión cifrada SSL · Powered by Wompi Colombia
+                </p>
+            </div>
+
+            <!-- ÉXITO -->
+            <div id="step-success" class="bg-white rounded-3xl p-8 md:p-12 border border-olive/10 shadow-sm fade-up text-center" style="display:none;">
+                <div class="w-20 h-20 bg-terra/10 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <i class="fa-solid fa-check-circle text-terra text-4xl"></i>
+                </div>
+                <h2 class="text-3xl text-olive mb-2" style="font-weight:300;">¡Pago recibido!</h2>
+                <p class="text-olive/55 text-sm max-w-sm mx-auto leading-relaxed mb-6">Tu reserva está confirmada. El encargado del Parque Mirador Conuco ya recibió todos tus datos por WhatsApp y te contactará pronto.</p>
+                <div id="success-box" class="bg-fog rounded-2xl p-5 text-left text-sm space-y-2 max-w-sm mx-auto mb-8"></div>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="nuevaReserva()" class="bg-olive hover:bg-oliveLight text-sand font-semibold py-3 px-7 rounded-full text-xs uppercase tracking-widest transition-all hover:scale-105">
+                        <i class="fa-solid fa-plus mr-2"></i>Nueva Reserva
+                    </button>
+                    <a href="index.html" class="border border-olive/20 hover:border-terra text-olive hover:text-terra font-semibold py-3 px-7 rounded-full text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-home"></i> Volver al Inicio
+                    </a>
+                </div>
+            </div>
+
+            <!-- BOTONES NAV -->
+            <div id="nav-btns" class="flex justify-between gap-4">
+                <button id="btn-back" onclick="prevStep()" style="display:none;"
+                        class="px-7 py-3.5 rounded-full border border-olive/20 text-olive/70 hover:border-terra hover:text-terra text-sm font-semibold tracking-wider uppercase transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>Atrás
+                </button>
+                <div class="flex-1"></div>
+                <button id="btn-next" onclick="nextStep()"
+                        class="bg-olive hover:bg-oliveLight text-terra font-semibold px-8 py-3.5 rounded-full text-sm tracking-wider uppercase transition-all hover:scale-105 shadow-md flex items-center gap-2">
+                    Siguiente <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="space-y-5">
+
+            <!-- Tu selección -->
+            <div class="bg-oliveDark rounded-3xl p-6 text-sand">
+                <h3 class="text-lg mb-5" style="font-family:'Cormorant Garamond',serif;font-weight:400;"><i class="fa-solid fa-clipboard-list text-terra mr-2"></i>Tu selección</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="flex gap-3">
+                        <i class="fa-solid fa-calendar-check text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Llegada</p><p id="sel-in" class="font-medium">—</p></div>
+                    </div>
+                    <div class="flex gap-3">
+                        <i class="fa-solid fa-calendar-xmark text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Salida</p><p id="sel-out" class="font-medium">—</p></div>
+                    </div>
+                    <div class="flex gap-3">
+                        <i class="fa-solid fa-moon text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Noches</p><p id="sel-nights" class="font-medium">—</p></div>
+                    </div>
+                    <div class="flex gap-3 pt-3 border-t border-sand/10">
+                        <i class="fa-solid fa-house-chimney text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Cabaña</p><p id="sel-cabin" class="font-medium">—</p></div>
+                    </div>
+                    <div class="flex gap-3">
+                        <i class="fa-solid fa-user text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Huésped</p><p id="sel-nombre" class="font-medium">—</p></div>
+                    </div>
+                    <div class="flex gap-3 pt-3 border-t border-sand/10">
+                        <i class="fa-solid fa-tag text-terra mt-0.5 shrink-0 w-4 text-center"></i>
+                        <div><p class="text-sand/35 text-[10px] uppercase tracking-widest mb-0.5">Total estimado</p><p id="sel-total" class="font-bold text-terra text-lg" style="font-family:'Cormorant Garamond',serif;">—</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disponibilidad -->
+            <div class="bg-white rounded-3xl p-6 border border-sand shadow-sm">
+                <h3 class="text-sm font-semibold text-olive mb-4"><i class="fa-solid fa-door-open text-terra mr-2"></i>Disponibilidad</h3>
+                <div id="avail-list" class="space-y-1.5"></div>
+                <p class="text-[10px] text-olive/35 mt-4 leading-relaxed"><i class="fa-solid fa-circle-info mr-1"></i>Se actualiza automáticamente.</p>
+            </div>
+
+            <!-- Precios -->
+            <div class="bg-fog rounded-3xl p-6 border border-sand">
+                <h3 class="text-sm font-semibold text-olive mb-4"><i class="fa-solid fa-coins text-terra mr-2"></i>Tarifas</h3>
+                <div class="space-y-2 text-xs text-olive/70">
+                    <div class="flex justify-between"><span>Plan Día (sin noche)</span><span class="font-semibold text-olive">$50.000</span></div>
+                    <div class="flex justify-between"><span>Cabaña Colonial / noche</span><span class="font-semibold text-olive">$150.000</span></div>
+                    <div class="flex justify-between"><span>Cabaña Piramidal / noche</span><span class="font-semibold text-olive">$150.000</span></div>
+                    <div class="flex justify-between"><span>Camping / persona / noche</span><span class="font-semibold text-olive">$30.000</span></div>
+                </div>
+                <p class="text-[10px] text-olive/40 mt-4 leading-relaxed">Precios en pesos colombianos (COP) · IVA incluido.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESERVAS PRÓXIMAS (pública) -->
+    <div class="mt-12 bg-white rounded-3xl p-6 md:p-8 border border-sand shadow-sm">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <h2 class="text-2xl text-olive" style="font-weight:400;"><i class="fa-solid fa-list-check text-terra mr-2"></i>Fechas próximamente ocupadas</h2>
+            <button onclick="openAdmin()" class="text-xs text-terra border border-terra/30 hover:border-terra px-4 py-2 rounded-full font-semibold uppercase tracking-wider transition-all">
+                <i class="fa-solid fa-lock mr-1"></i> Admin
+            </button>
+        </div>
+        <div id="res-list" class="space-y-3"></div>
+        <p id="no-res" class="text-sm text-olive/40 text-center py-6 hidden"><i class="fa-solid fa-calendar-days text-2xl block mb-2 opacity-30"></i>Sin reservas registradas aún.</p>
+    </div>
+</main>
+
+<!-- MODAL ADMIN -->
+<div id="admin-modal" class="modal-bg hidden">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl text-olive" style="font-family:'Cormorant Garamond',serif;">Panel Admin</h3>
+            <button onclick="closeAdmin()" class="w-8 h-8 rounded-full bg-fog text-olive hover:bg-sand flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark text-sm"></i></button>
+        </div>
+        <div id="admin-login-box">
+            <label class="form-label">Contraseña</label>
+            <input id="admin-pw" type="password" placeholder="••••••" class="form-input mb-4" onkeydown="if(event.key==='Enter')adminLogin()">
+            <button onclick="adminLogin()" class="w-full bg-olive text-terra font-semibold py-3 rounded-full text-sm uppercase tracking-widest hover:bg-oliveLight transition-all">Ingresar</button>
+        </div>
+        <div id="admin-content" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-sm font-semibold text-olive"><i class="fa-solid fa-shield-check text-terra mr-1"></i>Acceso concedido</p>
+                <button onclick="adminLogout()" class="text-xs text-terra hover:underline">Salir</button>
+            </div>
+            <div id="admin-res-list" class="space-y-3"></div>
+            <button onclick="clearAll()" class="w-full mt-5 border border-red-200 text-red-400 hover:bg-red-50 py-3 rounded-full text-xs uppercase tracking-wider font-semibold transition-all">
+                <i class="fa-solid fa-trash mr-2"></i>Eliminar todas las reservas
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIGURACIÓN — EDITAR ANTES DE PUBLICAR
+// ═══════════════════════════════════════════
+const CFG = {
+    wompiKey:        'pub_test_XXXXXXXXXXXXXXXX',   // ← Pegar llave pública Wompi aquí
+    whatsappNum:     '573000000000',                // ← Número real del encargado con 57
+    adminPassword:   'conuco2025',                  // ← Cambiar antes de publicar
+    storageKey:      'conuco_reservas_v3',
+};
+
+// PRECIOS en centavos COP (Wompi usa centavos)
+const PRECIOS = {
+    'plan-dia':    5000000,   // $50.000 COP
+    'colonial-1':  15000000,  // $150.000/noche
+    'colonial-2':  15000000,
+    'colonial-3':  15000000,
+    'piramidal-1': 15000000,
+    'piramidal-2': 15000000,
+    'camping':     3000000,   // $30.000/persona/noche
+};
+
+const CABANAS = [
+    { id:'colonial-1',  nombre:'Cabaña Colonial 1',  tipo:'colonial',   icono:'fa-house-chimney', cap:4 },
+    { id:'colonial-2',  nombre:'Cabaña Colonial 2',  tipo:'colonial',   icono:'fa-house-chimney', cap:4 },
+    { id:'colonial-3',  nombre:'Cabaña Colonial 3',  tipo:'colonial',   icono:'fa-house-chimney', cap:4 },
+    { id:'piramidal-1', nombre:'Cabaña Piramidal 1', tipo:'piramidal',  icono:'fa-chevron-up',    cap:2 },
+    { id:'piramidal-2', nombre:'Cabaña Piramidal 2', tipo:'piramidal',  icono:'fa-chevron-up',    cap:2 },
+    { id:'camping',     nombre:'Zona de Camping',    tipo:'camping',    icono:'fa-campground',    cap:8 },
+];
+
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+// ═══════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════
+let S = {
+    step: 1,
+    year: new Date().getFullYear(), month: new Date().getMonth(),
+    pickingIn: true,
+    checkin: null, checkout: null,
+    cabanaId: null,
+    nombre:'', telefono:'', email:'', adultos:'2', ninos:'0', notas:'',
+    totalCentavos: 0,
+};
+let adminOk = false;
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+const getRes = () => { try { return JSON.parse(localStorage.getItem(CFG.storageKey))||[]; } catch{ return []; } };
+const saveRes = arr => localStorage.setItem(CFG.storageKey, JSON.stringify(arr));
+
+function ocupadasEnRango(desde, hasta) {
+    const ocup = new Set();
+    getRes().forEach(r => {
+        if (desde < r.checkout && hasta > r.checkin) ocup.add(r.cabanaId);
+    });
+    return ocup;
+}
+
+function libresEnFecha(fecha) {
+    const next = new Date(fecha); next.setDate(next.getDate()+1);
+    return CABANAS.length - ocupadasEnRango(toStr(fecha), toStr(next)).size;
+}
+
+const toStr = d => typeof d==='string' ? d : d.toISOString().split('T')[0];
+
+// ═══════════════════════════════════════════
+// CALENDARIO
+// ═══════════════════════════════════════════
+function renderCal() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const first  = new Date(S.year, S.month, 1).getDay();
+    const days   = new Date(S.year, S.month+1, 0).getDate();
+    document.getElementById('cal-header').textContent = `${MESES[S.month]} ${S.year}`;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+    for (let i=0;i<first;i++) grid.appendChild(document.createElement('div'));
+    for (let d=1;d<=days;d++) {
+        const date = new Date(S.year, S.month, d); date.setHours(0,0,0,0);
+        const ds   = toStr(date);
+        const free = libresEnFecha(date);
+        const past = date < today;
+        const isIn  = S.checkin  && ds===S.checkin;
+        const isOut = S.checkout && ds===S.checkout;
+        const inRng = S.checkin && S.checkout && ds>S.checkin && ds<S.checkout;
+        const isToday = date.getTime()===today.getTime();
+
+        const el = document.createElement('div');
+        el.classList.add('cal-day');
+        if (past)       el.classList.add('past');
+        else if (!free) el.classList.add('full');
+        else {
+            el.classList.add('available');
+            if (isIn||isOut) el.classList.add('selected');
+            if (inRng)       el.classList.add('in-range');
+            if (isToday)     el.classList.add('today-mark');
+            el.onclick = () => pickDate(ds);
+        }
+
+        const dot = document.createElement('div');
+        dot.classList.add('avail-dot');
+        if (!past) dot.style.background = free===0?'#ccc':free<=2?'#e87a3a':'#5a8a4a';
+        el.innerHTML = `<span>${d}</span>`;
+        el.appendChild(dot);
+        grid.appendChild(el);
+    }
+}
+
+function pickDate(ds) {
+    if (S.pickingIn || !S.checkin) {
+        S.checkin=ds; S.checkout=null; S.pickingIn=false;
+    } else {
+        if (ds<=S.checkin) { S.checkin=ds; S.checkout=null; S.pickingIn=false; }
+        else { S.checkout=ds; S.pickingIn=true; }
+    }
+    updSidebar(); renderCal();
+}
+
+const prevMonth = () => { S.month===0?(S.month=11,S.year--):S.month--; renderCal(); };
+const nextMonth = () => { S.month===11?(S.month=0,S.year++):S.month++; renderCal(); };
+
+// ═══════════════════════════════════════════
+// CABAÑAS
+// ═══════════════════════════════════════════
+function renderCabins() {
+    const ocup = S.checkin && S.checkout ? ocupadasEnRango(S.checkin, S.checkout) : new Set();
+    const nights = calcNights();
+    document.getElementById('sub2').textContent = nights > 0
+        ? `Del ${fmtDate(S.checkin)} al ${fmtDate(S.checkout)} · ${nights} noche${nights>1?'s':''}`
+        : S.checkin ? `${fmtDate(S.checkin)} · Visita de un día` : '';
+
+    const grid = document.getElementById('cabin-grid');
+    grid.innerHTML = '';
+    CABANAS.forEach(c => {
+        const busy = ocup.has(c.id);
+        const sel  = S.cabanaId===c.id;
+        const el   = document.createElement('div');
+        el.classList.add('cabin-card');
+        if (sel)  el.classList.add('selected');
+        if (busy) el.classList.add('unavailable');
+
+        const pNoche = c.id==='camping' ? '$30.000/pers/noche' :
+                       (c.tipo==='colonial'||c.tipo==='piramidal') ? '$150.000/noche' : '';
+        el.innerHTML = `
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${sel?'bg-terra text-white':'bg-fog text-terra'}">
+              <i class="fa-solid ${c.icono} text-sm"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-sm text-olive">${c.nombre}</p>
+              <p class="text-[10px] text-olive/40 uppercase tracking-wider mt-0.5">Cap. ${c.cap} pers · ${pNoche}</p>
+              <span class="inline-block mt-1.5 text-[9px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider border ${
+                busy ? 'bg-red-50 text-red-400 border-red-100' : 'bg-green-50 text-green-600 border-green-100'
+              }">${busy?'No disponible':'Disponible'}</span>
+            </div>
+            ${sel?'<i class="fa-solid fa-circle-check text-terra mt-1 shrink-0"></i>':''}
+          </div>`;
+        if (!busy) el.onclick = () => { S.cabanaId=c.id; updSidebar(); renderCabins(); };
+        grid.appendChild(el);
+    });
+}
+
+// ═══════════════════════════════════════════
+// PRECIO
+// ═══════════════════════════════════════════
+function calcTotal() {
+    if (!S.cabanaId) return 0;
+    const nights = calcNights();
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    if (nights===0) return PRECIOS['plan-dia']; // visita día
+    if (S.cabanaId==='camping') {
+        const pers = parseInt(S.adultos||1) + parseInt(S.ninos||0);
+        return PRECIOS['camping'] * nights * pers;
+    }
+    return PRECIOS[S.cabanaId] * nights;
+}
+
+function fmtCOP(centavos) {
+    return '$' + (centavos/100).toLocaleString('es-CO');
+}
+
+function buildPriceBreakdown() {
+    const nights = calcNights();
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    if (!cab) return;
+    const total = calcTotal();
+    S.totalCentavos = total;
+
+    const br = document.getElementById('price-breakdown');
+    br.innerHTML = '';
+
+    const addRow = (label, val) => {
+        const row = document.createElement('div');
+        row.className = 'price-row';
+        row.innerHTML = `<span class="text-olive/65">${label}</span><span class="font-semibold text-olive">${val}</span>`;
+        br.appendChild(row);
+    };
+
+    if (nights===0) {
+        addRow('Plan de un Día · 1 persona', fmtCOP(PRECIOS['plan-dia']));
+    } else if (S.cabanaId==='camping') {
+        const pers = parseInt(S.adultos||1)+parseInt(S.ninos||0);
+        addRow(`Camping · ${pers} personas`, '');
+        addRow(`${nights} noche${nights>1?'s':''} × ${pers} pers × $30.000`, fmtCOP(total));
+    } else {
+        addRow(`${cab.nombre}`, '');
+        addRow(`${nights} noche${nights>1?'s':''} × ${fmtCOP(PRECIOS[S.cabanaId])}`, fmtCOP(total));
+    }
+
+    document.getElementById('price-total-display').textContent = fmtCOP(total);
+    document.getElementById('sel-total').textContent = fmtCOP(total);
+}
+
+// ═══════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════
+function updSidebar() {
+    document.getElementById('sel-in').textContent    = S.checkin  ? fmtDate(S.checkin)  : '—';
+    document.getElementById('sel-out').textContent   = S.checkout ? fmtDate(S.checkout) : (S.checkin?'Visita de día':'—');
+    const n = calcNights();
+    document.getElementById('sel-nights').textContent = n>0 ? `${n} noche${n>1?'s':''}` : (S.checkin?'Día completo':'—');
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    document.getElementById('sel-cabin').textContent  = cab ? cab.nombre : '—';
+    document.getElementById('sel-nombre').textContent = S.nombre || '—';
+    if (S.cabanaId) {
+        const t = calcTotal();
+        document.getElementById('sel-total').textContent = fmtCOP(t);
+    }
+    renderAvail();
+}
+
+function renderAvail() {
+    const desde = S.checkin || toStr(new Date());
+    const hasta = S.checkout || (() => { const d=new Date(desde); d.setDate(d.getDate()+1); return toStr(d); })();
+    const ocup  = ocupadasEnRango(desde, hasta);
+    const cont  = document.getElementById('avail-list');
+    cont.innerHTML = '';
+    CABANAS.forEach(c => {
+        const busy = ocup.has(c.id);
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between text-xs py-1.5 border-b border-fog last:border-0';
+        el.innerHTML = `
+          <span class="text-olive/65 flex items-center gap-2"><i class="fa-solid ${c.icono} text-terra text-xs w-4 text-center"></i>${c.nombre}</span>
+          <span class="font-semibold text-[10px] ${busy?'text-red-400':'text-green-600'}">
+            <i class="fa-solid ${busy?'fa-circle-xmark':'fa-circle-check'} mr-0.5"></i>${busy?'Ocupada':'Libre'}
+          </span>`;
+        cont.appendChild(el);
+    });
+}
+
+// ═══════════════════════════════════════════
+// WOMPI WIDGET
+// ═══════════════════════════════════════════
+function mountWompi() {
+    const container = document.getElementById('wompi-container');
+    container.innerHTML = '';
+
+    // Si Wompi no cargó (requiere https:// en producción) mostrar alternativa por WhatsApp
+    if (typeof WidgetCheckout === 'undefined') {
+        const cab = CABANAS.find(c=>c.id===S.cabanaId);
+        const nights = calcNights();
+        const msg = [
+            '🌿 *SOLICITUD DE RESERVA — Parque Mirador Conuco*',
+            '',
+            `👤 *Huésped:* ${S.nombre}`,
+            `📞 *WhatsApp:* ${S.telefono}`,
+            `📧 *Email:* ${S.email}`,
+            `🏠 *Cabaña:* ${cab?cab.nombre:'—'}`,
+            `📅 *Llegada:* ${fmtDate(S.checkin)}`,
+            `📅 *Salida:* ${S.checkout?fmtDate(S.checkout):'Visita de día'}`,
+            `🌙 *Noches:* ${nights>0?nights:'Visita de día'}`,
+            `👥 *Adultos:* ${S.adultos} | *Niños:* ${S.ninos}`,
+            `💰 *Total:* ${fmtCOP(S.totalCentavos)} COP`,
+            S.notas?`📝 *Notas:* ${S.notas}`:'',
+            '',
+            '⚠️ _Pago pendiente — cliente enviará comprobante_',
+        ].filter(Boolean).join('\n');
+        const waUrl = `https://wa.me/${CFG.whatsappNum}?text=${encodeURIComponent(msg)}`;
+        container.innerHTML = `
+            <div class="space-y-3">
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800 flex gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-500 shrink-0 mt-0.5 text-base"></i>
+                    <span>El pago en línea con Wompi requiere que el sitio esté publicado en <strong>https://</strong>. Mientras tanto puedes coordinar el pago directamente con el encargado.</span>
+                </div>
+                <a href="${waUrl}" target="_blank" onclick="registrarReservaPendiente()"
+                   class="w-full bg-[#25d366] hover:bg-[#1dba58] text-white font-semibold py-4 px-6 rounded-full text-sm uppercase tracking-widest transition-all hover:scale-[1.02] flex items-center justify-center gap-3 shadow-lg">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    Enviar solicitud por WhatsApp
+                </a>
+                <p class="text-center text-[10px] text-olive/40">El encargado coordinará el pago contigo por WhatsApp</p>
+            </div>`;
+        return;
+    }
+
+    const ref = `CONUCO-${Date.now()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    const nights = calcNights();
+
+    const checkout = new WidgetCheckout({
+        currency:        'COP',
+        amountInCents:   S.totalCentavos,
+        reference:       ref,
+        publicKey:       CFG.wompiKey,
+        redirectUrl:     window.location.href + '?reserva=ok',
+        customerData: {
+            email:      S.email,
+            fullName:   S.nombre,
+            phoneNumber: S.telefono,
+            phoneNumberPrefix: '+57',
+        },
+    });
+
+    checkout.open(result => {
+        const { transaction } = result;
+        if (transaction && transaction.status === 'APPROVED') {
+            // Guardar reserva
+            const reservas = getRes();
+            reservas.push({
+                id: Date.now(),
+                ref,
+                nombre:       S.nombre,
+                telefono:     S.telefono,
+                email:        S.email,
+                checkin:      S.checkin,
+                checkout:     S.checkout || S.checkin,
+                cabanaId:     S.cabanaId,
+                cabanaNombre: cab ? cab.nombre : '',
+                adultos:      S.adultos,
+                ninos:        S.ninos,
+                notas:        S.notas,
+                totalCOP:     S.totalCentavos/100,
+                estado:       'pagada',
+                creadaEn:     new Date().toISOString(),
+            });
+            saveRes(reservas);
+
+            // Mensaje WhatsApp al encargado
+            const msg = [
+                '✅ *RESERVA PAGADA — Parque Mirador Conuco*',
+                '',
+                `👤 *Huésped:* ${S.nombre}`,
+                `📞 *WhatsApp:* ${S.telefono}`,
+                `📧 *Email:* ${S.email}`,
+                `🏠 *Cabaña:* ${cab?cab.nombre:'—'}`,
+                `📅 *Llegada:* ${fmtDate(S.checkin)}`,
+                `📅 *Salida:* ${S.checkout ? fmtDate(S.checkout) : 'Visita de día'}`,
+                `🌙 *Noches:* ${nights>0?nights:'Visita de día'}`,
+                `👥 *Adultos:* ${S.adultos} | *Niños:* ${S.ninos}`,
+                `💰 *Total pagado:* ${fmtCOP(S.totalCentavos)} COP`,
+                `🔖 *Referencia Wompi:* ${ref}`,
+                S.notas ? `📝 *Notas:* ${S.notas}` : '',
+                '',
+                `⏰ ${new Date().toLocaleString('es-CO')}`,
+            ].filter(Boolean).join('\n');
+
+            window.open(`https://wa.me/${CFG.whatsappNum}?text=${encodeURIComponent(msg)}`, '_blank');
+            showSuccess(ref);
+        } else if (transaction && transaction.status === 'DECLINED') {
+            showToast('⚠️ El pago fue declinado. Intenta con otro método.', true);
+        }
+    });
+}
+
+function showSuccess(ref) {
+    for(let i=1;i<=4;i++){const e=document.getElementById(`step-${i}`);if(e)e.style.display='none';}
+    document.getElementById('nav-btns').style.display='none';
+    document.getElementById('step-success').style.display='block';
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    document.getElementById('success-box').innerHTML = `
+        <p class="flex gap-2"><i class="fa-solid fa-user text-terra shrink-0 mt-0.5"></i><span><strong>${S.nombre}</strong></span></p>
+        <p class="flex gap-2"><i class="fa-solid fa-house-chimney text-terra shrink-0 mt-0.5"></i><span>${cab?cab.nombre:'—'}</span></p>
+        <p class="flex gap-2"><i class="fa-solid fa-calendar text-terra shrink-0 mt-0.5"></i><span>${fmtDate(S.checkin)} → ${S.checkout?fmtDate(S.checkout):'Día'}</span></p>
+        <p class="flex gap-2"><i class="fa-solid fa-receipt text-terra shrink-0 mt-0.5"></i><span>Ref: <code class="text-xs bg-fog px-1 rounded">${ref}</code></span></p>
+        <p class="flex gap-2 pt-2 border-t border-sand"><i class="fa-brands fa-whatsapp text-[#25d366] shrink-0 mt-0.5"></i><span class="text-olive/60">El encargado recibió tus datos por WhatsApp y te contactará pronto.</span></p>
+    `;
+    renderResList();
+    showToast('✅ ¡Reserva confirmada y pago recibido!');
+}
+
+// ═══════════════════════════════════════════
+// RESUMEN PASO 4
+// ═══════════════════════════════════════════
+function buildResumen() {
+    const cab    = CABANAS.find(c=>c.id===S.cabanaId);
+    const nights = calcNights();
+    document.getElementById('resumen-datos').innerHTML = `
+        <div class="grid grid-cols-2 gap-3">
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Huésped</p><p class="font-semibold text-olive">${S.nombre}</p></div>
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Teléfono</p><p class="font-semibold text-olive">${S.telefono}</p></div>
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Cabaña</p><p class="font-semibold text-olive">${cab?cab.nombre:'—'}</p></div>
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Noches</p><p class="font-semibold text-olive">${nights>0?nights:'Día completo'}</p></div>
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Llegada</p><p class="font-semibold text-olive">${fmtDate(S.checkin)}</p></div>
+            <div><p class="text-[10px] text-olive/40 uppercase tracking-wider">Salida</p><p class="font-semibold text-olive">${S.checkout?fmtDate(S.checkout):'—'}</p></div>
+        </div>
+    `;
+    buildPriceBreakdown();
+    mountWompi();
+}
+
+// ═══════════════════════════════════════════
+// NAVEGACIÓN PASOS
+// ═══════════════════════════════════════════
+function nextStep() {
+    if (S.step===1) {
+        if (!S.checkin) { showToast('⚠️ Selecciona al menos la fecha de llegada', true); return; }
+        show(2); renderCabins();
+    } else if (S.step===2) {
+        if (!S.cabanaId) { showToast('⚠️ Selecciona una cabaña', true); return; }
+        show(3);
+    } else if (S.step===3) {
+        const nombre = document.getElementById('inp-nombre').value.trim();
+        const tel    = document.getElementById('inp-tel').value.trim();
+        const email  = document.getElementById('inp-email').value.trim();
+        if (!nombre) { showToast('⚠️ Ingresa tu nombre', true); return; }
+        if (!tel)    { showToast('⚠️ Ingresa tu teléfono', true); return; }
+        if (!email || !email.includes('@')) { showToast('⚠️ Ingresa un correo válido', true); return; }
+        S.nombre  = nombre; S.telefono = tel; S.email = email;
+        S.adultos = document.getElementById('inp-adultos').value;
+        S.ninos   = document.getElementById('inp-ninos').value;
+        S.notas   = document.getElementById('inp-notas').value.trim();
+        updSidebar(); buildResumen(); show(4);
+    }
+}
+
+function prevStep() { if(S.step>1) show(S.step-1); }
+
+function show(n) {
+    for(let i=1;i<=4;i++){const e=document.getElementById(`step-${i}`);if(e)e.style.display=i===n?'block':'none';}
+    S.step=n;
+    // Step bar
+    for(let i=1;i<=4;i++){
+        const c=document.getElementById(`s${i}`);
+        const labels=['lbl2','lbl3','lbl4'];
+        if(i<n){c.className='step-num bg-terra text-white';c.innerHTML='<i class="fa-solid fa-check text-xs"></i>';}
+        else if(i===n){c.className='step-num bg-terra text-white';c.innerHTML=i;}
+        else{c.className='step-num bg-sand text-olive/40';c.innerHTML=i;}
+        if(i>1){const lb=document.getElementById(`lbl${i}`);if(lb)lb.className=i<=n?'text-[9px] text-terra font-bold tracking-wider uppercase':'text-[9px] text-olive/35 font-bold tracking-wider uppercase';}
+    }
+    for(let i=1;i<=3;i++){const l=document.getElementById(`l${i}${i+1}`);if(l)l.className=i<n?'step-line done':'step-line';}
+
+    const bk=document.getElementById('btn-back');
+    const nx=document.getElementById('btn-next');
+    bk.style.display=n>1?'flex':'none';
+    nx.style.display=n===4?'none':'flex';
+    nx.innerHTML=n<3?'Siguiente <i class="fa-solid fa-arrow-right text-xs"></i>':'Revisar reserva <i class="fa-solid fa-arrow-right text-xs"></i>';
+    window.scrollTo({top:80,behavior:'smooth'});
+}
+
+function nuevaReserva() {
+    S={step:1,year:new Date().getFullYear(),month:new Date().getMonth(),pickingIn:true,checkin:null,checkout:null,cabanaId:null,nombre:'',telefono:'',email:'',adultos:'2',ninos:'0',notas:'',totalCentavos:0};
+    ['inp-nombre','inp-tel','inp-email','inp-notas'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    document.getElementById('step-success').style.display='none';
+    document.getElementById('nav-btns').style.display='flex';
+    show(1); renderCal(); updSidebar();
+}
+
+// ═══════════════════════════════════════════
+// LISTA PÚBLICA
+// ═══════════════════════════════════════════
+function renderResList() {
+    const today = toStr(new Date());
+    const futuras = getRes().filter(r=>r.checkout>=today||r.checkin>=today)
+        .sort((a,b)=>new Date(a.checkin)-new Date(b.checkin));
+    const list  = document.getElementById('res-list');
+    const noRes = document.getElementById('no-res');
+    list.innerHTML='';
+    if(!futuras.length){noRes.classList.remove('hidden');return;}
+    noRes.classList.add('hidden');
+    futuras.slice(0,10).forEach(r=>{
+        const el=document.createElement('div');
+        el.className='flex items-center gap-4 p-4 bg-fog rounded-2xl border border-sand/60 text-sm flex-wrap';
+        el.innerHTML=`
+          <div class="w-9 h-9 bg-olive/8 rounded-full flex items-center justify-center shrink-0"><i class="fa-solid fa-house-chimney text-terra text-sm"></i></div>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-olive truncate">${r.cabanaNombre}</p>
+            <p class="text-xs text-olive/45">${fmtDate(r.checkin)} → ${fmtDate(r.checkout)}</p>
+          </div>
+          <span class="text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full border ${r.estado==='pagada'?'bg-green-50 text-green-600 border-green-100':'bg-terra/8 text-terra border-terra/15'}">
+            ${r.estado==='pagada'?'✓ Pagada':'Pendiente'}
+          </span>`;
+        list.appendChild(el);
+    });
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+function openAdmin()  { document.getElementById('admin-modal').classList.remove('hidden'); if(adminOk) showAdminContent(); }
+function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+function adminLogin() {
+    if(document.getElementById('admin-pw').value===CFG.adminPassword){adminOk=true;showAdminContent();}
+    else{showToast('⚠️ Contraseña incorrecta',true);document.getElementById('admin-pw').value='';}
+}
+function adminLogout(){adminOk=false;document.getElementById('admin-content').classList.add('hidden');document.getElementById('admin-login-box').classList.remove('hidden');document.getElementById('admin-pw').value='';}
+function showAdminContent(){
+    document.getElementById('admin-login-box').classList.add('hidden');
+    document.getElementById('admin-content').classList.remove('hidden');
+    renderAdminList();
+}
+function renderAdminList(){
+    const cont=document.getElementById('admin-res-list');
+    const reservas=getRes().sort((a,b)=>new Date(b.creadaEn)-new Date(a.creadaEn));
+    cont.innerHTML='';
+    if(!reservas.length){cont.innerHTML='<p class="text-xs text-olive/40 text-center py-4">Sin reservas.</p>';return;}
+    reservas.forEach(r=>{
+        const el=document.createElement('div');
+        el.className='bg-fog rounded-xl p-4 border border-sand space-y-2 text-sm';
+        el.innerHTML=`
+          <div class="flex items-start justify-between gap-2 flex-wrap">
+            <div><p class="font-semibold text-olive">${r.nombre}</p><p class="text-xs text-olive/45">${r.telefono} · ${r.email||''}</p></div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="toggleEstado(${r.id})" class="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-all ${r.estado==='pagada'?'bg-green-50 text-green-600 border-green-200':'bg-terra/10 text-terra border-terra/25'}">
+                ${r.estado==='pagada'?'✓ Pagada':'Pendiente'}
+              </button>
+              <button onclick="delRes(${r.id})" class="w-6 h-6 bg-red-50 text-red-400 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <p class="text-xs text-olive/55"><i class="fa-solid fa-house-chimney text-terra mr-1"></i>${r.cabanaNombre} · <i class="fa-solid fa-calendar text-terra mx-1"></i>${fmtDate(r.checkin)} → ${fmtDate(r.checkout)} · <strong>${fmtCOP((r.totalCOP||0)*100)}</strong></p>
+          ${r.ref?`<p class="text-[10px] text-olive/35">Ref: ${r.ref}</p>`:''}
+          ${r.notas?`<p class="text-xs text-olive/45 italic">"${r.notas}"</p>`:''}
+          <a href="https://wa.me/${(r.telefono||'').replace(/\D/g,'')}?text=${encodeURIComponent(`Hola ${r.nombre}! Te escribimos del Parque Mirador Conuco para confirmar tu reserva del ${fmtDate(r.checkin)}. ¡Te esperamos!`)}"
+             target="_blank" class="inline-flex items-center gap-1 text-[10px] text-[#25d366] font-semibold hover:underline">
+            <i class="fa-brands fa-whatsapp"></i> Responder al huésped
+          </a>`;
+        cont.appendChild(el);
+    });
+}
+function toggleEstado(id){const r=getRes();const i=r.findIndex(x=>x.id===id);if(i>-1){r[i].estado=r[i].estado==='pagada'?'pendiente':'pagada';saveRes(r);renderAdminList();renderResList();renderCal();}}
+function delRes(id){if(!confirm('¿Eliminar reserva?'))return;saveRes(getRes().filter(r=>r.id!==id));renderAdminList();renderResList();renderCal();updSidebar();}
+function clearAll(){if(!confirm('¿Eliminar TODAS las reservas?'))return;saveRes([]);renderAdminList();renderResList();renderCal();updSidebar();showToast('🗑️ Reservas eliminadas');}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const calcNights = () => {
+    if(!S.checkin||!S.checkout) return 0;
+    return Math.max(0,Math.round((new Date(S.checkout)-new Date(S.checkin))/86400000));
+};
+const fmtDate = str => {
+    if(!str) return '—';
+    const [y,m,d]=str.split('-');
+    return `${parseInt(d)} ${MESES[parseInt(m)-1].substring(0,3)} ${y}`;
+};
+let _toastT;
+function showToast(msg,warn=false){
+    const t=document.getElementById('toast');
+    t.innerHTML=`${warn?'<i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-300"></i>':'<i class="fa-solid fa-check-circle mr-2 text-green-300"></i>'} ${msg}`;
+    t.style.background=warn?'#8b4a1a':'#3d4a2e';
+    t.classList.add('show');
+    clearTimeout(_toastT);
+    _toastT=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// Registrar reserva pendiente cuando no hay Wompi disponible
+function registrarReservaPendiente() {
+    const cab = CABANAS.find(c=>c.id===S.cabanaId);
+    const reservas = getRes();
+    reservas.push({
+        id: Date.now(),
+        ref: `CONUCO-WA-${Date.now()}`,
+        nombre:       S.nombre,
+        telefono:     S.telefono,
+        email:        S.email,
+        checkin:      S.checkin,
+        checkout:     S.checkout || S.checkin,
+        cabanaId:     S.cabanaId,
+        cabanaNombre: cab ? cab.nombre : '',
+        adultos:      S.adultos,
+        ninos:        S.ninos,
+        notas:        S.notas,
+        totalCOP:     S.totalCentavos/100,
+        estado:       'pendiente',
+        creadaEn:     new Date().toISOString(),
+    });
+    saveRes(reservas);
+    setTimeout(() => showSuccess(`WA-${Date.now()}`), 500);
+}
+
+// Detectar retorno de Wompi por redirectUrl
+if(new URLSearchParams(location.search).get('reserva')==='ok'){
+    history.replaceState(null,'',location.pathname);
+    showToast('✅ ¡Pago recibido! Reserva confirmada.');
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+    renderCal(); updSidebar(); renderResList(); show(1);
+});
+</script>
+</body>
+</html>
