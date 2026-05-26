@@ -732,23 +732,42 @@ function _mostrarFallbackWA() {
     }
 }
 
-function _montarWompi() {
+async function generarFirma(ref, monto, moneda, secreto) {
+    const cadena = ref + monto + moneda + secreto;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(cadena);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function _montarWompi() {
     const container = document.getElementById('wompi-container');
+    container.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-terra text-2xl"></i><p class="text-xs text-olive/50 mt-2">Preparando pago seguro...</p></div>';
+
+    const ref      = 'CONUCO-' + Date.now();
+    const monto    = S.totalCentavos;
+    const moneda   = 'COP';
+    const pubKey   = 'pub_test_OTjNdHZSwrQwP97JMnymcEsXn2yJaXvb';
+    const secreto  = 'test_integrity_5gU82OR4U4dEfT69BffsiW8Gg5GIbvuy';
+
+    const firma = await generarFirma(ref, monto, moneda, secreto);
+
     container.innerHTML = '';
-    const ref = `CONUCO-${Date.now()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
     const cab = CABANAS.find(c=>c.id===S.cabanaId);
     const nights = calcNights();
 
     const checkout = new WidgetCheckout({
-        currency:        'COP',
-        amountInCents:   S.totalCentavos,
-        reference:       ref,
-        publicKey:       'pub_test_OTjNdHZSwrQwP97JMnymcEsXn2yJaXvb',
-        redirectUrl:     window.location.href + '?reserva=ok',
+        currency:          moneda,
+        amountInCents:     monto,
+        reference:         ref,
+        publicKey:         pubKey,
+        signature:         { integrity: firma },
+        redirectUrl:       window.location.href + '?reserva=ok',
         customerData: {
-            email:      S.email,
-            fullName:   S.nombre,
-            phoneNumber: S.telefono,
+            email:             S.email,
+            fullName:          S.nombre,
+            phoneNumber:       S.telefono,
             phoneNumberPrefix: '+57',
         },
     });
