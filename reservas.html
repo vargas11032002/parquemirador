@@ -715,7 +715,7 @@ function mountWompi() {
         return;
     }
 
-    const ref = `CONUCO-${Date.now()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
+    const ref = 'CONUCO-' + Date.now();
     const cab = CABANAS.find(c=>c.id===S.cabanaId);
     const nights = calcNights();
 
